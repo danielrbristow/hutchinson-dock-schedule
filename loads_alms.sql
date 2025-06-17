@@ -56,17 +56,31 @@ WITH loads_data AS (
 		ON ld.[Load_Tag] = ll.[Load_Tag]
 			AND ld.[Load_ID] = ll.[Load_ID]
 			AND ld.[Status] <> 'Adjusted'
-	WHERE
-		ld.[Status] <> 'Adjusted'
-		AND ld.[cus] IN ('AVS', 'FMS')
-		AND (ll.[cus] IN ('AVS', 'FMS') OR ll.[cus] IS NULL)
-		AND (ll.[Life_Cycle_Seq] NOT IN (	
-			'System Cancelled (4)'
-			,'ACA Cancelled (5)'
-			,'ACA Adjusted (6)'
-			,'ACA Rejected (7)'
-		) OR ll.[Life_Cycle_Seq] IS NULL)
-		--AND ll.[Load_Tag] = '775704'
+WHERE
+	ld.[Status] <> 'Adjusted'
+	--AND ld.[cus] IN ('AVS', 'FMS')
+	AND (ll.[cus] IN ('AVS', 'FMS') OR ll.[cus] IS NULL)
+	AND (ll.[Life_Cycle_Seq] NOT IN (	
+		'System Cancelled (4)'
+		,'ACA Cancelled (5)'
+		,'ACA Adjusted (6)'
+		,'ACA Rejected (7)'
+	) OR ll.[Life_Cycle_Seq] IS NULL)
+	AND ll.[Loadleg_Id] NOT IN (
+		-- Find loads where ALL delivery stops are to non-Hutchinson locations and EXCLUDE them.
+		SELECT s.[Loadleg_ID]
+		FROM METRIX_LOAD_LEG_STOP_Hourly_2306 s
+		WHERE s.[Is_Drop] = 1
+		AND s.cus IN ('AVS', 'HUT', 'FMS')
+		GROUP BY s.[Loadleg_ID]
+		HAVING SUM(CASE WHEN s.[Stop_Code] IN (
+			'10'
+			--,'10A'
+			,'11'
+			,'FMS'
+			,'AVS') THEN 1 ELSE 0 END) = 0
+	)
+	--AND ll.[Loadleg_tag] = '794196-1'
 
 )
 --,pbi_dataset AS (
