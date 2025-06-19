@@ -41,12 +41,12 @@ SELECT TOP 1000
 		WHEN s.[DataValue_StopType] = 'Delivery' THEN 'Dunnage'
 	END AS [Dunnage/Freight]
 		/* Compare planned arrival to estimated arrival */
-	,TRY_CAST(s.[DateTime_PlannedDeparture] AS DATETIME) AS [Planned Departure]
-	,TRY_CAST(s.[DateTime_PlannedDeparture] AS DATE) AS [Planned Departure Date]
+	,TRY_CAST(s.[DateTime_LateArrival] AS DATETIME) AS [Planned Departure]
+	,TRY_CAST(s.[DateTime_LateArrival] AS DATE) AS [Planned Departure Date]
 	,TRY_CAST(s.[DateTime_ExpectedDeparture] AS DATETIME) AS [Estimated Departure]
 	,TRY_CAST(s.[DateTime_ExpectedDeparture] AS DATE) AS [Estimated Departure Date]
 	,TRY_CAST(s.[DateTime_ExpectedDeparture] AS TIME) AS [Estimated Departure Time]
-	,CAST(DATEDIFF(MINUTE, TRY_CAST(s.[DateTime_PlannedDeparture] AS DATETIME), TRY_CAST(s.[DateTime_ExpectedDeparture] AS DATETIME)) / 60.0 AS DECIMAL(5,2)) AS [Late By (Hrs)]
+	,CAST(DATEDIFF(MINUTE, TRY_CAST(s.[DateTime_LateArrival] AS DATETIME), TRY_CAST(s.[DateTime_ExpectedDeparture] AS DATETIME)) / 60.0 AS DECIMAL(5,2)) AS [Late By (Hrs)]
 	
 	--Identify day of the week.
 	,DATENAME(WEEKDAY, s.[DateTime_PlannedArrival]) AS [Planned Day of Week]
@@ -111,9 +111,9 @@ SELECT TOP 1000
 	,TRY_CAST(s.[DateTime_PlannedArrival] AS DATETIME) AS [Planned Arrival]
 	,TRY_CAST(s.[DateTime_PlannedArrival] AS DATE) AS [Planned Arrival Date]
 	,TRY_CAST(s.[DateTime_PlannedArrival] AS TIME) AS [Planned Arrival Time]
-	--,TRY_CAST(s.[DateTime_PlannedDeparture] AS DATETIME) AS [Planned Departure]
-	--,TRY_CAST(s.[DateTime_PlannedDeparture] AS DATE) AS [Planned Departure Date]
-	,TRY_CAST(s.[DateTime_PlannedDeparture] AS TIME) AS [Planned Departure Time]
+	--,TRY_CAST(s.[DateTime_LateArrival] AS DATETIME) AS [Planned Departure]
+	--,TRY_CAST(s.[DateTime_LateArrival] AS DATE) AS [Planned Departure Date]
+	,TRY_CAST(s.[DateTime_LateArrival] AS TIME) AS [Planned Departure Time]
 	,TRY_CAST(s.[DateTime_ActualDeparture] AS DATETIME) AS [Actual Departure]
 	,TRY_CAST(s.[DateTime_ActualDeparture] AS DATE) AS [Actual Departure Date]
 	,TRY_CAST(s.[DateTime_ActualDeparture] AS TIME) AS [Actual Departure Time]
@@ -318,7 +318,7 @@ FROM final_data f
 LEFT JOIN
 	supplier_agg s
 	ON f.[Loadleg ID] = s.[Loadleg ID]
-
+--WHERE [Loadleg Tag] = 'l250530-68567'
 ORDER BY [Loadleg Tag], [Stop Sequence]
 
 
