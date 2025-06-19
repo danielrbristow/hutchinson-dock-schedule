@@ -4,6 +4,8 @@ DOCK SCHEDULE (HUTCHINSON)
 
 DANIEL BRISTOW, 06/16/2025
 
+Updated 06/19/2025 to replace s.[DateTime_PlannedDeparture] with s.[DateTime_LateArrival] for on-time-performance evaluation
+
 FOR POWER BI IMPORT
 */
 
